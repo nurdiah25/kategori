@@ -6,7 +6,6 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "dropbox/dropbox-sdk": "*",
         "kunalvarma05/dropbox-php-sdk": "^0.5.0",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
