@@ -64,11 +64,26 @@
                         </a>
                     </li>
                     @endif
+
+
                     <li class="nav-item @yield('transaksi_active')">
-                        <a class="nav-link" href="{{ route('transaksis.index') }}">
+                        <a class="nav-link" data-toggle="collapse" href="#transaksiMenu" aria-expanded="false">
                             <p>Transaksi</p>
                         </a>
+                        <div class="collapse" id="transaksiMenu">
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('transaksis.index') }}">Data Transaksi</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('transaksis.create') }}">Tambah Transaksi</a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
+                    
+
+
                     <li class="nav-item @yield('laporan_active')">
                         <a class="nav-link" href="{{ route('laporans.index') }}">
                             <p>Laporan</p>
