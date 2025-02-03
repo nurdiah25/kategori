@@ -73,6 +73,9 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 Route::resource('laporans', LaporanController::class)->middleware('auth');
 Route::get('/laporans', [LaporanController::class, 'index'])->name('laporans.index')->middleware('auth');
 
+Route::post('laporans/downloadAll', [LaporanController::class, 'downloadAllPdf'])->name('laporans.downloadAllPdf');
+
+
 //route dropbox
 Route::post('/laporans/send-to-dropbox', [LaporanController::class, 'sendLaporanToDropbox'])->name('laporans.sendToDropbox')->middleware('auth');
 

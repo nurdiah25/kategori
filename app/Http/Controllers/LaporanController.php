@@ -9,13 +9,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use PDF;
 
 class LaporanController extends Controller
 {
     public function index()
     {
-        $laporans = Laporan::all();
-
         // Ambil laporan dengan grouping bulan
         $laporans = Laporan::select('*', DB::raw("DATE_FORMAT(tanggal_laporan, '%M %Y') as bulan"))
             ->orderBy('tanggal_laporan', 'desc')
@@ -70,14 +69,11 @@ class LaporanController extends Controller
             'total_pengeluaran' => $totalPengeluaran,
             'total_barang_keluar' => $totalBarangKeluar,
             'total_barang_masuk' => $totalBarangMasuk,
-            'id_user' => 1, // ID pengguna dari sesi login
-            // 'id_barang' => 1
+            'id_user' => Auth::id(), // ID pengguna dari sesi login
         ]);
 
         return redirect()->route('laporans.index')->with('success', 'Laporan berhasil ditambahkan!');
     }
-
-
 
     public function show($id_laporan)
     {
@@ -96,9 +92,6 @@ class LaporanController extends Controller
     public function sendLaporanToDropbox(Request $request)
     {
         try {
-            // Pastikan folder 'laporan' ada
-            // $this->ensureLaporanFolderExists();
-
             $request->validate([
                 'tanggal' => 'required|date',
             ]);
@@ -138,12 +131,29 @@ class LaporanController extends Controller
         // Ambil token akses dari file .env
         $dropboxToken = env('DROPBOX_ACCESS_TOKEN');
 
-        // Log token untuk memastikan bahwa token bisa diambil dari .env
-        Log::info('Dropbox Access Token: ' . $dropboxToken);
-
         if (!$dropboxToken) {
             Log::error('Dropbox Access Token tidak ditemukan di .env');
             return response()->json(['error' => 'Token Dropbox tidak ditemukan di .env'], 500);
         }
+    }
+
+    // Fungsi untuk Mendownload Laporan dalam Format PDF
+    public function downloadPdf($id_laporan)
+    {
+        $laporan = Laporan::findOrFail($id_laporan);
+        $pdf = PDF::loadView('laporans.pdf', compact('laporan'));
+        return $pdf->download('laporan_' . $laporan->id_laporan . '.pdf');
+    }
+
+    // Fungsi untuk Mendownload Semua Laporan dalam Format PDF
+    public function downloadAllPdf()
+    {
+        $laporans = Laporan::all(); // Ambil semua laporan
+
+        // Membuat PDF dari view yang sudah ada
+        $pdf = PDF::loadView('laporans.pdf', compact('laporans'));
+
+        // Menyimpan PDF ke dalam file atau langsung mengunduhnya
+        return $pdf->download('laporan_seluruhnya.pdf');
     }
 }
